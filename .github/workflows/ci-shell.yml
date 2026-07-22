@@ -1,0 +1,12 @@
+name: ci-shell
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  shell:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/shell'
+      prefix: shell

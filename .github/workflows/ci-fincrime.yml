@@ -1,0 +1,12 @@
+name: ci-fincrime
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  fincrime:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/fincrime'
+      prefix: fincrime

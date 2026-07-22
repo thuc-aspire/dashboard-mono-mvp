@@ -1,0 +1,12 @@
+name: ci-spend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  spend:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/spend'
+      prefix: spend

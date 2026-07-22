@@ -1,0 +1,55 @@
+name: _app-ci
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        required: true
+        type: string
+      prefix:
+        required: true
+        type: string
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Detect if ${{ inputs.package }} is affected
+        id: detect
+        run: |
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            AFFECTED_PACKAGES=$(pnpm exec turbo run build --filter="...[HEAD^]" --dry-run=json | jq -r '.packages[]')
+          else
+            AFFECTED_PACKAGES="${{ inputs.package }}"   # first commit: build everything
+          fi
+          echo "Affected packages:"; echo "${AFFECTED_PACKAGES}"
+          if echo "${AFFECTED_PACKAGES}" | grep -qx "${{ inputs.package }}"; then
+            echo "affected=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "affected=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build (scoped to app + its dependencies)
+        if: steps.detect.outputs.affected == 'true'
+        run: pnpm exec turbo run build --filter="${{ inputs.package }}..."
+      - name: Deploy (simulated — real commands from spec §6)
+        if: steps.detect.outputs.affected == 'true'
+        run: |
+          echo "WOULD RUN: aws s3 sync apps/${{ inputs.prefix }}/dist s3://dash.aspireapp.com/${{ inputs.prefix }}/"
+          echo "WOULD RUN: aws cloudfront create-invalidation --distribution-id \$DIST_ID --paths '/${{ inputs.prefix }}/index.html'"
+      - uses: actions/upload-artifact@v4
+        if: steps.detect.outputs.affected == 'true'
+        with:
+          name: deploy-${{ inputs.prefix }}
+          path: apps/${{ inputs.prefix }}/dist
+      - name: Not affected — skipped
+        if: steps.detect.outputs.affected == 'false'
+        run: echo "${{ inputs.package }} unaffected by this change; no build, no deploy."

@@ -4,7 +4,7 @@
   "packageManager": "pnpm@10.30.2",
   "scripts": {
     "build": "turbo run build",
-    "test:edge": "node --test 'edge/**/*.test.mjs'",
+    "test:edge": "node --test edge/*.test.mjs",
     "deploy:local": "node scripts/deploy-local.mjs",
     "serve:cdn": "node edge/server.mjs"
   },

@@ -32,9 +32,11 @@ test('unknown app falls back to shell not-found', async () => {
   assert.equal(await route('/legacy-resource/uuid-1/show'), '/shell/index.html');
 });
 
-// KNOWN CAVEAT (raised in spec review): a dot anywhere in the URI is treated as a
-// static asset, so a route param containing a dot would 404 at origin instead of
-// SPA-falling-back. Documented here on purpose — do not "fix" without Thuc's sign-off.
-test('caveat: dot in a route param is (mis)treated as a static asset', async () => {
-  assert.equal(await route('/spend/recipients/john.doe/show'), '/spend/recipients/john.doe/show');
+// KNOWN CAVEAT (raised in spec review): a dot in the URI's FINAL segment is
+// treated as a static asset, so a trailing route param containing a dot would
+// 404 at origin instead of SPA-falling-back. A dot in a non-final segment is
+// unaffected. Documented here on purpose — do not "fix" without Thuc's sign-off.
+test('caveat: dot in a trailing route param is (mis)treated as a static asset', async () => {
+  assert.equal(await route('/spend/recipients/john.doe'), '/spend/recipients/john.doe');
+  assert.equal(await route('/spend/recipients/john.doe/show'), '/spend/index.html');
 });

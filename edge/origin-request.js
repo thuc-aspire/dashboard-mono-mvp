@@ -9,7 +9,7 @@ const KNOWN_APPS = [
   'fincrime',
 ];
 const DEFAULT_APP = 'shell';
-const HAS_FILE_EXTENSION = /\.[a-zA-Z0-9]+/;
+const HAS_FILE_EXTENSION = /\.[a-zA-Z0-9]+$/;
 exports.handler = (event, context, callback) => {
   const request = event.Records[0].cf.request;
   const uri = request.uri;

@@ -24,6 +24,7 @@ Proves the two claims that matter:
 ```bash
 pnpm install
 pnpm build && pnpm deploy:local && pnpm serve:cdn   # → http://localhost:4000
+# in a second terminal:
 pnpm test:edge                                       # routing contract tests
 ./scripts/demo-affected.sh                           # change-scoping proof
 ```
@@ -35,3 +36,5 @@ fallback); header nav across apps = full reload (by design); `/anything-unknown`
 
 - Dot in a route param is treated as a static asset (see `edge/origin-request.test.mjs`).
 - Legacy-app fallback / URL-compat story is an open spec question — this MVP does not model the legacy app.
+- CI affected-detection diffs HEAD^ only: a multi-commit push may skip packages touched solely in earlier commits of that push (github.event.before has its own failure modes; out of MVP scope).
+- Visiting /shell/ directly renders shell's not-found view — shell's router base is / while its asset base is /shell/ (by design; users enter at /).

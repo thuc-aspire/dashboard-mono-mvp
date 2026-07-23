@@ -32,6 +32,21 @@ pnpm test:edge                                       # routing contract tests
 Browser checks on :4000 — `/` = shell; `/spend/invoices` deep link works (per-app SPA
 fallback); header nav across apps = full reload (by design); `/anything-unknown` = shell 404.
 
+## Local dev (single app)
+
+Each app runs its own Vite dev server on a fixed port so you can work on one app without
+building/deploying the whole stack:
+
+```bash
+pnpm dev:shell      # http://localhost:5173/shell/
+pnpm dev:spend      # http://localhost:5174/spend/
+pnpm dev:fincrime   # http://localhost:5175/fincrime/
+pnpm dev            # all three at once (via turbo)
+```
+
+Note the trailing app-prefix path (e.g. `/shell/`, not `/`) — each app's Vite `base` matches
+its production S3 prefix, and the dev server only serves under that base.
+
 ## Known caveats carried from the spec (do not fix silently)
 
 - Dot in a route param is treated as a static asset (see `edge/origin-request.test.mjs`).

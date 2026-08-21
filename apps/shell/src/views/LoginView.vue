@@ -1,17 +1,19 @@
 <script setup>
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { setToken } from '@mvp/auth';
 
 const route = useRoute();
-const router = useRouter();
 const username = ref('');
 
 function login() {
   // Prototype: no real backend — any non-empty username signs you in.
   setToken(`demo-token-${Date.now()}`);
   const next = typeof route.query.next === 'string' ? route.query.next : '/';
-  router.replace(next);
+  // Full navigation, not router.replace: `next` may point at a different
+  // app entirely (e.g. /fincrime/), which shell's own router has no route
+  // for — same "full reload between apps" rule the header nav follows.
+  window.location.href = next;
 }
 </script>
 

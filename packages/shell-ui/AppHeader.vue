@@ -1,6 +1,5 @@
 <script setup>
 import { logout } from '@mvp/auth';
-import { APPS } from './apps.js';
 
 defineProps({
   currentApp: { type: String, required: true },
@@ -11,12 +10,7 @@ defineProps({
   <header class="app-header">
     <strong class="app-header__brand">Aspire Ops (MVP)</strong>
     <nav class="app-header__nav">
-      <a
-        v-for="link in APPS"
-        :key="link.app"
-        :href="link.href"
-        :class="['app-header__link', { 'app-header__link--active': link.app === currentApp }]"
-      >{{ link.label }}</a>
+      <a href="/" :class="['app-header__link', { 'app-header__link--active': currentApp === 'shell' }]">Home</a>
     </nav>
     <button type="button" class="app-header__logout" @click="logout()">Logout</button>
   </header>

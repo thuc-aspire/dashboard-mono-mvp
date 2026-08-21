@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '@/views/HomeView.vue';
+import OverviewView from '@/views/OverviewView.vue';
+import SettingsView from '@/views/SettingsView.vue';
 
 export const router = createRouter({
   history: createWebHistory('/aspire-os/'),
-  routes: [{ path: '/', component: HomeView }],
+  routes: [
+    { path: '/', redirect: '/overview' },
+    { path: '/overview', component: OverviewView },
+    { path: '/settings', component: SettingsView },
+  ],
 });

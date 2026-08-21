@@ -13,42 +13,7 @@ function toggle(i) {
 
 <template>
   <main class="app-home">
-    <section class="app-home__search-wrapper">
-      <div class="app-home__search">
-        <h3>Search:</h3>
-        <input class="app-home__search-input" type="text" placeholder="Type to search (cmd+k)" />
-      </div>
-
-      <div class="app-home__reports">
-        <div class="app-home__reports-title">DASHBOARD REPORTS</div>
-        <p>If you need a feature/improvement or want to report an issue:</p>
-        <ul>
-          <li>Talk to us on <a href="#">Slack</a></li>
-          <li>File a request via the <a href="#">feedback form</a></li>
-        </ul>
-      </div>
-
       <slot />
-    </section>
-
-    <section v-if="releases.length" class="app-home__release">
-      <article v-for="(r, i) in releases" :key="r.app" class="app-home__release-card">
-        <div class="app-home__release-card-title">{{ r.app }}</div>
-        <div class="app-home__release-card-meta">
-          <span class="app-home__tag">{{ r.version }}</span>
-          <span>{{ r.date }}</span>
-        </div>
-        <p
-          class="app-home__release-card-notes"
-          :class="{ 'app-home__release-card-notes--clamped': !expanded.has(i) }"
-        >
-          {{ r.notes }}
-        </p>
-        <button type="button" class="app-home__show-more" @click="toggle(i)">
-          {{ expanded.has(i) ? 'Show less' : 'See more' }}
-        </button>
-      </article>
-    </section>
   </main>
 </template>
 

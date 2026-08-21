@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
+import { crossAppProxy } from '../../scripts/dev-proxy.mjs';
 
 export default defineConfig({
   base: '/aspire-dash-v1/',
@@ -11,5 +12,6 @@ export default defineConfig({
   server: {
     port: 5176,
     strictPort: true,
+    proxy: crossAppProxy('aspire-dash-v1'),
   },
 });

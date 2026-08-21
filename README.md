@@ -39,7 +39,7 @@ Each app runs its own Vite dev server on a fixed port so you can work on one app
 building/deploying the whole stack:
 
 ```bash
-pnpm dev:shell            # http://localhost:5173/shell/
+pnpm dev:shell            # http://localhost:5173/  (shell only — see below)
 pnpm dev:fincrime         # http://localhost:5175/fincrime/
 pnpm dev:aspire-dash-v1   # http://localhost:5176/aspire-dash-v1/
 pnpm dev:cards            # http://localhost:5177/cards/
@@ -48,30 +48,44 @@ pnpm dev:aspire-os        # http://localhost:5179/aspire-os/
 pnpm dev                  # all apps at once (via turbo)
 ```
 
-Note the trailing app-prefix path (e.g. `/shell/`, not `/`) — each app's Vite `base` matches
-its production S3 prefix, and the dev server only serves under that base.
+Note the trailing app-prefix path (e.g. `/fincrime/`, not `/`) — each app's Vite `base` matches
+its production S3 prefix, and the dev server only serves under that base. Shell is the one
+exception: its dev server serves at `/` (matching its router base) instead of `/shell/` (its
+build-time asset base) — see `apps/shell/vite.config.mjs` and the auth section below.
 
 ## Auth (prototype)
 
 Every app's `main.js` registers a `requireAuth` guard (`@mvp/auth`) before mounting. There's
 no real backend — it's a token-presence check against `localStorage['aspire_token']`:
 
-- **No token on any protected route** → full-page redirect to `/shell/login?next=<path>`.
-  This is a `window.location.href` navigation, not a router push, because each app is a
-  separately deployed bundle — an in-app route change can't reach another app's page.
+- **No token on any protected route** → full-page redirect to `/login?next=<path>` (root-relative
+  — see below). This is a `window.location.href` navigation, not a router push, because each
+  app is a separately deployed bundle — an in-app route change can't reach another app's page.
 - **Logging in** (`apps/shell/src/views/LoginView.vue`) accepts any non-empty username,
-  writes a fake token via `setToken()`, and redirects to `?next` (or `/`, shell's home —
-  now also the post-login "choose an app" screen via `AppPicker`).
+  writes a fake token via `setToken()`, and does a full navigation to `?next` (or `/`, shell's
+  home — now also the post-login "choose an app" screen via `AppPicker`). Full navigation,
+  not `router.replace`, since `next` may point at a different app entirely.
 - **Switching apps** is the existing header nav (`AppHeader`, shared via `shell-ui`) — since
   `localStorage` is per-origin, the token is already there once you land on the next app.
-- **Logout** (button in `AppHeader`, every app) clears the token and redirects to `/shell/login`.
+- **Logout** (button in `AppHeader`, every app) clears the token and redirects to `/login`.
 
-Caveat: `localStorage` is scoped per-origin. In production (`dash.aspireapp.com/{app}/*`)
-and in the local CDN simulator (`:4000`) every app shares one origin, so the token carries
-over. Running apps individually via `pnpm dev:*` puts each on its **own port** (5173–5179),
-which counts as a different origin — logging in on one dev server won't carry over to
-another. Use the CDN simulator (`pnpm build && pnpm deploy:local && pnpm serve:cdn`) to see
-the cross-app login/logout/switch flow end-to-end.
+`/login` is deliberately **root-relative, not `/shell/login`**: shell's client router runs at
+base `/` while its Vite *asset* base is `/shell/` (see `apps/shell/vite.config.mjs`) — an unrecognized
+single-segment path like `/login` falls through `edge/origin-request.js` to shell's bundle
+while the browser URL stays `/login`, matching shell's own route exactly. `requireAuth` also
+has a loop guard (`window.location.pathname === '/login'` short-circuits the redirect) so a
+route/base mismatch degrades to a no-op instead of a redirect loop.
+
+Each app's dev server also proxies every *other* app's prefix — and shell's root-relative
+`/login` and `/` — to that app's own dev port (`scripts/dev-proxy.mjs`, wired into each
+`vite.config.mjs`'s `server.proxy`). There's no edge function in front of raw `vite dev` the
+way there is in production/the CDN simulator, so without this, cross-app links (AppPicker
+tiles, `/login` redirects from a non-shell app) would 404 or render the wrong app's SPA. This
+means: as long as the apps you're navigating between are actually running (`pnpm dev`, or the
+specific pair via `pnpm dev:shell` + `pnpm dev:fincrime` etc. in separate terminals), clicking
+an AppPicker tile or the header's "Home" link from `pnpm dev:shell` alone works exactly like
+the CDN simulator — same browser origin throughout, so `localStorage` carries over too.
+Hitting a proxy target that isn't running fails with a connection error, not a silent 404.
 
 ## Known caveats carried from the spec (do not fix silently)
 

@@ -1,5 +1,11 @@
 const TOKEN_KEY = 'aspire_token';
-const LOGIN_PATH = '/shell/login';
+// Root-relative on purpose: shell's client router runs at base '/' (its Vite
+// asset base '/shell/' is a build/deploy detail, not a routable prefix — see
+// the edge routing rules in edge/origin-request.js and the README caveat on
+// shell's dual base). An unrecognized single-segment path like '/login' falls
+// through the edge function to shell's bundle while the browser URL stays
+// '/login', which is exactly what shell's own '/login' route expects.
+const LOGIN_PATH = '/login';
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
@@ -35,6 +41,12 @@ export function logout() {
 export function requireAuth(router, { publicPaths = [] } = {}) {
   router.beforeEach((to) => {
     if (isLoggedIn() || publicPaths.includes(to.path)) return true;
+    // Belt-and-braces loop guard: if the real browser URL is already the
+    // login path, never redirect again — regardless of what the router
+    // resolved `to.path` to. Without this, a dev server whose Vite `base`
+    // doesn't line up with the router's base (shell's, by design) can turn
+    // a route mismatch into an infinite redirect loop instead of a no-op.
+    if (window.location.pathname === LOGIN_PATH) return true;
     redirectToLogin();
     return false;
   });

@@ -8,9 +8,8 @@ defineProps({
 
 <template>
   <header class="app-header">
-    <strong class="app-header__brand">Aspire Ops (MVP)</strong>
     <nav class="app-header__nav">
-      <a href="/" :class="['app-header__link', { 'app-header__link--active': currentApp === 'shell' }]">Home</a>
+      <a href="/" :class="['app-header__link', { 'app-header__link--active': currentApp === 'shell' }]">App Switcher</a>
     </nav>
     <button type="button" class="app-header__logout" @click="logout()">Logout</button>
   </header>

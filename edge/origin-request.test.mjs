@@ -11,17 +11,17 @@ test('root serves shell index', async () => {
 });
 
 test('known app bare prefix gets its own SPA fallback', async () => {
-  assert.equal(await route('/spend'), '/spend/index.html');
-  assert.equal(await route('/spend/'), '/spend/index.html');
+  assert.equal(await route('/cards'), '/cards/index.html');
+  assert.equal(await route('/cards/'), '/cards/index.html');
 });
 
 test('known app deep link gets its own SPA fallback', async () => {
-  assert.equal(await route('/spend/invoices'), '/spend/index.html');
+  assert.equal(await route('/cards/accounts'), '/cards/index.html');
   assert.equal(await route('/fincrime/cases'), '/fincrime/index.html');
 });
 
 test('known app static asset passes through untouched', async () => {
-  assert.equal(await route('/spend/assets/index-abc123.js'), '/spend/assets/index-abc123.js');
+  assert.equal(await route('/cards/assets/index-abc123.js'), '/cards/assets/index-abc123.js');
 });
 
 test('root-level file maps into shell prefix', async () => {
@@ -37,6 +37,6 @@ test('unknown app falls back to shell not-found', async () => {
 // 404 at origin instead of SPA-falling-back. A dot in a non-final segment is
 // unaffected. Documented here on purpose — do not "fix" without Thuc's sign-off.
 test('caveat: dot in a trailing route param is (mis)treated as a static asset', async () => {
-  assert.equal(await route('/spend/recipients/john.doe'), '/spend/recipients/john.doe');
-  assert.equal(await route('/spend/recipients/john.doe/show'), '/spend/index.html');
+  assert.equal(await route('/cards/recipients/john.doe'), '/cards/recipients/john.doe');
+  assert.equal(await route('/cards/recipients/john.doe/show'), '/cards/index.html');
 });

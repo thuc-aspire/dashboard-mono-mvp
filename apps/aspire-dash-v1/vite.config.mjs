@@ -3,13 +3,13 @@ import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/spend/',
+  base: '/aspire-dash-v1/',
   plugins: [vue()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   server: {
-    port: 5174,
+    port: 5176,
     strictPort: true,
   },
 });

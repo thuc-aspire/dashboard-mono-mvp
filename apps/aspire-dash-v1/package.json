@@ -1,11 +1,12 @@
 {
-  "name": "@mvp/spend",
+  "name": "@mvp/aspire-dash-v1",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {
+    "@mvp/auth": "workspace:*",
     "@mvp/shell-ui": "workspace:*",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"

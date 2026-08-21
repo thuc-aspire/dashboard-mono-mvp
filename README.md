@@ -14,8 +14,9 @@ Proves the two claims that matter:
 
 | Path | Maps to (production) |
 |---|---|
-| `apps/{shell,spend,fincrime}` | one Vite build + one CI pipeline + one S3 prefix each |
-| `packages/shell-ui` | `@dashboard/shell-ui` — shared chrome, source-consumed |
+| `apps/{shell,fincrime,cards,aspire-dash-v1,aspire-ba,aspire-os}` | one Vite build + one CI pipeline + one S3 prefix each |
+| `packages/shell-ui` | `@dashboard/shell-ui` — shared chrome (header, sidebar, layout, home), source-consumed |
+| `packages/auth` | `@mvp/auth` — token storage + the cross-app login guard, source-consumed |
 | `edge/origin-request.js` | the CloudFront Lambda@Edge function (verbatim) |
 | `.github/workflows/ci-*.yml` | per-squad pipeline (spec §6) |
 
@@ -29,7 +30,7 @@ pnpm test:edge                                       # routing contract tests
 ./scripts/demo-affected.sh                           # change-scoping proof
 ```
 
-Browser checks on :4000 — `/` = shell; `/spend/invoices` deep link works (per-app SPA
+Browser checks on :4000 — `/` = shell; `/fincrime/cases` deep link works (per-app SPA
 fallback); header nav across apps = full reload (by design); `/anything-unknown` = shell 404.
 
 ## Local dev (single app)
@@ -38,14 +39,39 @@ Each app runs its own Vite dev server on a fixed port so you can work on one app
 building/deploying the whole stack:
 
 ```bash
-pnpm dev:shell      # http://localhost:5173/shell/
-pnpm dev:spend      # http://localhost:5174/spend/
-pnpm dev:fincrime   # http://localhost:5175/fincrime/
-pnpm dev            # all three at once (via turbo)
+pnpm dev:shell            # http://localhost:5173/shell/
+pnpm dev:fincrime         # http://localhost:5175/fincrime/
+pnpm dev:aspire-dash-v1   # http://localhost:5176/aspire-dash-v1/
+pnpm dev:cards            # http://localhost:5177/cards/
+pnpm dev:aspire-ba        # http://localhost:5178/aspire-ba/
+pnpm dev:aspire-os        # http://localhost:5179/aspire-os/
+pnpm dev                  # all apps at once (via turbo)
 ```
 
 Note the trailing app-prefix path (e.g. `/shell/`, not `/`) — each app's Vite `base` matches
 its production S3 prefix, and the dev server only serves under that base.
+
+## Auth (prototype)
+
+Every app's `main.js` registers a `requireAuth` guard (`@mvp/auth`) before mounting. There's
+no real backend — it's a token-presence check against `localStorage['aspire_token']`:
+
+- **No token on any protected route** → full-page redirect to `/shell/login?next=<path>`.
+  This is a `window.location.href` navigation, not a router push, because each app is a
+  separately deployed bundle — an in-app route change can't reach another app's page.
+- **Logging in** (`apps/shell/src/views/LoginView.vue`) accepts any non-empty username,
+  writes a fake token via `setToken()`, and redirects to `?next` (or `/`, shell's home —
+  now also the post-login "choose an app" screen via `AppPicker`).
+- **Switching apps** is the existing header nav (`AppHeader`, shared via `shell-ui`) — since
+  `localStorage` is per-origin, the token is already there once you land on the next app.
+- **Logout** (button in `AppHeader`, every app) clears the token and redirects to `/shell/login`.
+
+Caveat: `localStorage` is scoped per-origin. In production (`dash.aspireapp.com/{app}/*`)
+and in the local CDN simulator (`:4000`) every app shares one origin, so the token carries
+over. Running apps individually via `pnpm dev:*` puts each on its **own port** (5173–5179),
+which counts as a different origin — logging in on one dev server won't carry over to
+another. Use the CDN simulator (`pnpm build && pnpm deploy:local && pnpm serve:cdn`) to see
+the cross-app login/logout/switch flow end-to-end.
 
 ## Known caveats carried from the spec (do not fix silently)
 

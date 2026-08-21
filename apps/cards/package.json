@@ -1,5 +1,5 @@
 {
-  "name": "@mvp/fincrime",
+  "name": "@mvp/cards",
   "private": true,
   "scripts": {
     "dev": "vite",

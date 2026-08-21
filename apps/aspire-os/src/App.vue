@@ -3,7 +3,7 @@ import { AppLayout } from '@mvp/shell-ui';
 </script>
 
 <template>
-  <AppLayout current-app="fincrime">
+  <AppLayout current-app="aspire-os">
     <router-view />
   </AppLayout>
 </template>

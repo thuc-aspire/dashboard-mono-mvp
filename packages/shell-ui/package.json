@@ -2,5 +2,8 @@
   "name": "@mvp/shell-ui",
   "version": "0.0.0",
   "private": true,
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "@mvp/auth": "workspace:*"
+  }
 }

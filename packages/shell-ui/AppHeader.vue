@@ -1,13 +1,10 @@
 <script setup>
+import { logout } from '@mvp/auth';
+import { APPS } from './apps.js';
+
 defineProps({
   currentApp: { type: String, required: true },
 });
-
-const links = [
-  { app: 'shell', label: 'Home', href: '/' },
-  { app: 'spend', label: 'Spend', href: '/spend/' },
-  { app: 'fincrime', label: 'FinCrime', href: '/fincrime/' },
-];
 </script>
 
 <template>
@@ -15,17 +12,19 @@ const links = [
     <strong class="app-header__brand">Aspire Ops (MVP)</strong>
     <nav class="app-header__nav">
       <a
-        v-for="link in links"
+        v-for="link in APPS"
         :key="link.app"
         :href="link.href"
         :class="['app-header__link', { 'app-header__link--active': link.app === currentApp }]"
       >{{ link.label }}</a>
     </nav>
+    <button type="button" class="app-header__logout" @click="logout()">Logout</button>
   </header>
 </template>
 
 <style>
-.app-header { display: flex; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #ddd; font-family: sans-serif; }
-.app-header__nav { display: flex; gap: 12px; }
+.app-header { display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #ddd; font-family: sans-serif; }
+.app-header__nav { flex: 1; display: flex; gap: 12px; }
 .app-header__link--active { font-weight: 700; }
+.app-header__logout { cursor: pointer; background: none; border: 1px solid #ddd; border-radius: 4px; padding: 4px 12px; font-size: 0.85rem; }
 </style>

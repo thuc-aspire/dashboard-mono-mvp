@@ -1,8 +1,14 @@
 <script setup>
-import { AppHeader } from '@mvp/shell-ui';
+import { AppLayout } from '@mvp/shell-ui';
+
+const sidebarLinks = [
+  { label: 'Cases', to: '/cases' },
+  { label: 'Rules', to: '/rules' },
+];
 </script>
 
 <template>
-  <AppHeader current-app="fincrime" />
-  <router-view />
+  <AppLayout current-app="fincrime" :sidebar-links="sidebarLinks">
+    <router-view />
+  </AppLayout>
 </template>

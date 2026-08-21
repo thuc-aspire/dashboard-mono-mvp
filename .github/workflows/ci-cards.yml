@@ -1,0 +1,12 @@
+name: ci-cards
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  cards:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/cards'
+      prefix: cards

@@ -5,8 +5,11 @@
 // Keep in sync with apps/* as squads migrate off the legacy app.
 const KNOWN_APPS = [
   'shell',
-  'spend',
   'fincrime',
+  'cards',
+  'aspire-dash-v1',
+  'aspire-ba',
+  'aspire-os',
 ];
 const DEFAULT_APP = 'shell';
 const HAS_FILE_EXTENSION = /\.[a-zA-Z0-9]+$/;
@@ -21,7 +24,7 @@ exports.handler = (event, context, callback) => {
     return callback(null, request);
   }
   if (KNOWN_APPS.includes(appName)) {
-    // Static asset ("/spend/assets/xyz.js") -> serve as-is.
+    // Static asset ("/cards/assets/xyz.js") -> serve as-is.
     if (HAS_FILE_EXTENSION.test(uri)) {
       return callback(null, request);
     }

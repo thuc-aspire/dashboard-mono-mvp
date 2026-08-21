@@ -1,0 +1,12 @@
+name: ci-aspire-dash-v1
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  aspire-dash-v1:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/aspire-dash-v1'
+      prefix: aspire-dash-v1

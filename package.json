@@ -6,8 +6,11 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:shell": "turbo run dev --filter=@mvp/shell",
-    "dev:spend": "turbo run dev --filter=@mvp/spend",
     "dev:fincrime": "turbo run dev --filter=@mvp/fincrime",
+    "dev:cards": "turbo run dev --filter=@mvp/cards",
+    "dev:aspire-dash-v1": "turbo run dev --filter=@mvp/aspire-dash-v1",
+    "dev:aspire-ba": "turbo run dev --filter=@mvp/aspire-ba",
+    "dev:aspire-os": "turbo run dev --filter=@mvp/aspire-os",
     "test:edge": "node --test edge/*.test.mjs",
     "deploy:local": "node scripts/deploy-local.mjs",
     "serve:cdn": "node edge/server.mjs"

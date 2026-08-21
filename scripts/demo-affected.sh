@@ -13,15 +13,15 @@ affected() {
   pnpm exec turbo run build --filter="...[HEAD^]" --dry-run=json | jq -r '.packages[] | select(. != "//")' | sort
 }
 
-echo "=== 1) Touch ONE app (apps/spend) ==="
-printf '\n' >> apps/spend/src/App.vue
-git commit -qam "demo: touch spend"
-affected   # expect: @mvp/spend only
+echo "=== 1) Touch ONE app (apps/cards) ==="
+printf '\n' >> apps/cards/src/App.vue
+git commit -qam "demo: touch cards"
+affected   # expect: @mvp/cards only
 
 echo "=== 2) Touch the SHARED package (packages/shell-ui) ==="
 printf '\n' >> packages/shell-ui/AppHeader.vue
 git commit -qam "demo: touch shell-ui"
-affected   # expect: all three apps (dependents of shell-ui)
+affected   # expect: all apps (dependents of shell-ui)
 
 echo "=== 3) Touch nothing in the graph (README) ==="
 printf '\n' >> README.md

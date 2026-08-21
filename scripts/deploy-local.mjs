@@ -1,7 +1,7 @@
 import { cp, rm } from 'node:fs/promises';
 
 // Simulates each squad's scoped deploy: `aws s3 sync apps/{app}/dist s3://dash.aspireapp.com/{app}/`
-const apps = ['shell', 'spend', 'fincrime'];
+const apps = ['shell', 'fincrime', 'cards', 'aspire-dash-v1', 'aspire-ba', 'aspire-os'];
 
 await rm(new URL('../.cdn', import.meta.url), { recursive: true, force: true });
 for (const app of apps) {

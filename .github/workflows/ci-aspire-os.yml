@@ -1,0 +1,12 @@
+name: ci-aspire-os
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  aspire-os:
+    uses: ./.github/workflows/_app-ci.yml
+    with:
+      package: '@mvp/aspire-os'
+      prefix: aspire-os

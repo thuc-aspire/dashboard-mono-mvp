@@ -1,12 +1,12 @@
-name: ci-spend
+name: ci-aspire-ba
 
 on:
   push:
     branches: [main]
 
 jobs:
-  spend:
+  aspire-ba:
     uses: ./.github/workflows/_app-ci.yml
     with:
-      package: '@mvp/spend'
-      prefix: spend
+      package: '@mvp/aspire-ba'
+      prefix: aspire-ba
